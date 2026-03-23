@@ -1,6 +1,8 @@
-# distance_matrix
+# Distance Matrix
 
 A Godot 4 GDExtension (C++) component for efficiently storing and querying pairwise distances between entity IDs.
+
+*If you need the version of MacOS or Linux, you can compile the sorce code by your customs scons.*
 
 ## Features
 
