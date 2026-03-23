@@ -1,51 +1,64 @@
 # distance_matrix
 
-一个基于 Godot 4 GDExtension（C++）实现的距离矩阵组件，用于高效存储和查询实体 ID 两两之间的距离值。
+A Godot 4 GDExtension (C++) component for efficiently storing and querying pairwise distances between entity IDs.
 
-## 功能特性
+## Features
 
-- 提供可复用的实体 ID 分配/回收机制
-- 使用上三角压缩存储距离矩阵，节省内存
-- 提供高频读写友好的接口：
+- Reusable entity ID allocation and recycling
+- Upper-triangular compressed storage to reduce memory usage
+- High-frequency read/write friendly API:
   - `allocate_id()`
   - `free_id(id)`
   - `set_distance(u1, u2, distance)`
   - `get_distance(u1, u2)`
 
-## 项目结构
+## Project Structure
 
-- `src/`：GDExtension C++ 源码
-- `game/bin/distance_matrix.gdextension`：Godot 扩展声明文件
-- `SConstruct`：SCons 构建脚本
-- `DistanceMatrix.xml`：Godot class reference 风格接口文档
-- `API.md`：项目内接口说明（中文）
+- `src/`: GDExtension C++ source code
+- `game/bin/distance_matrix.gdextension`: Godot extension declaration file
+- `SConstruct`: SCons build script
+- `doc_classes/DistanceMatrix.xml`: Godot class-reference style API document
+- `API.md`: Project API documentation
 
-## 环境要求
+## Requirements
 
-- Godot 4.1+（由 `distance_matrix.gdextension` 中 `compatibility_minimum` 指定）
-- Python（用于运行 SCons）
+- Godot 4.1+ (defined by `compatibility_minimum` in `distance_matrix.gdextension`)
+- Python (for running SCons)
 - SCons
-- 可用的 C++ 编译工具链（Windows 下可使用 MSVC）
-- `godot-cpp` 子模块/目录已准备完成
+- A working C++ toolchain (MSVC on Windows is recommended)
+- `godot-cpp` submodule/directory prepared
 
-## 构建方式
+## Build
 
-在项目根目录执行：
+Run in the project root:
 
 ```bash
 scons target=template_debug
 scons target=template_release
 ```
 
-构建完成后会在 `game/bin/` 生成对应平台动态库（如 Windows 下的 `.dll`）。
+After building, platform-specific dynamic libraries are generated in `game/bin/` (for example, `.dll` on Windows).
 
-## 在 Godot 中使用
+## GDExtension Documentation System
 
-1. 确保 `game/bin/distance_matrix.gdextension` 路径和库文件名正确。
-2. 在 Godot 项目中启用该 GDExtension。
-3. 在脚本中直接创建并使用 `DistanceMatrix`。
+This project is integrated with Godot's GDExtension documentation system:
 
-示例（GDScript）：
+- Custom XML docs are stored in `doc_classes/`
+- `SConstruct` embeds XML docs for `editor` and `template_debug` targets
+
+To generate or refresh XML doc stubs from registered classes, run this in the test Godot project directory:
+
+```bash
+godot --doctool ../ --gdextension-docs
+```
+
+## Use in Godot
+
+1. Ensure `game/bin/distance_matrix.gdextension` has correct library paths and filenames.
+2. Enable this GDExtension in your Godot project.
+3. Create and use `DistanceMatrix` in scripts.
+
+Example (GDScript):
 
 ```gdscript
 var dm := DistanceMatrix.new()
@@ -60,19 +73,19 @@ dm.free_id(a)
 print(dm.get_distance(a, b)) # 0.0
 ```
 
-## 接口语义说明
+## API Semantics
 
-- 非法 ID（负数或越界）会被安全忽略
-- `u1 == u2` 时：
-  - `set_distance()` 不执行写入
-  - `get_distance()` 返回 `0.0`
-- `free_id(id)` 会清空该 ID 与其他 ID 的距离值，并将其放入复用池
+- Invalid IDs (negative or out of range) are safely ignored
+- When `u1 == u2`:
+  - `set_distance()` does not write
+  - `get_distance()` returns `0.0`
+- `free_id(id)` clears all distances associated with that ID and adds it to the reuse pool
 
-## 文档
+## Documentation
 
-- 详细接口文档见 `API.md`
-- Godot class reference 风格文档见 `DistanceMatrix.xml`
+- Detailed API docs: `API.md`
+- Godot class-reference style docs: `doc_classes/DistanceMatrix.xml`
 
 ## License
 
-当前仓库未声明许可证。建议补充 `LICENSE` 文件以明确使用与分发条款。
+This project is licensed under the MIT License. See `LICENSE` for details.

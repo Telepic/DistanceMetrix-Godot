@@ -1,48 +1,48 @@
-# DistanceMatrix GDExtension 接口说明
+# DistanceMatrix GDExtension API
 
-本项目对外暴露一个 `RefCounted` 类：`DistanceMatrix`。
+This project exposes one `RefCounted` class: `DistanceMatrix`.
 
-## 类概览
+## Class Overview
 
-- **类名**: `DistanceMatrix`
-- **继承**: `RefCounted`
-- **用途**: 管理实体 ID 两两之间的距离值
-- **存储结构**: 上三角压缩数组（节省内存）
+- **Class name**: `DistanceMatrix`
+- **Inherits**: `RefCounted`
+- **Purpose**: Store pairwise distances between entity IDs
+- **Storage model**: Upper-triangular compressed array (memory efficient)
 
-## 方法说明
+## Method Reference
 
 ### `int allocate_id()`
 
-分配并返回一个可用 ID。
+Allocates and returns an available ID.
 
-- 若有已释放 ID，则优先复用
-- 否则创建新 ID 并扩容内部存储
+- Reuses an ID from the free pool when possible
+- Otherwise creates a new ID and resizes internal storage
 
 ### `void free_id(int id)`
 
-释放一个已分配 ID。
+Releases a previously allocated ID.
 
-- 会将该 ID 与其他实体的距离清零
-- 将该 ID 放入复用池
-- 若 `id` 非法（越界或负数），不做任何操作
+- Clears all distances related to this ID
+- Pushes the ID into the reuse pool
+- Does nothing if `id` is invalid (negative or out of range)
 
 ### `void set_distance(int u1, int u2, float distance)`
 
-设置两个实体之间的距离值。
+Sets the distance value between two entities.
 
-- `u1 == u2` 时忽略
-- 任一 ID 非法时忽略
-- 仅对有效、不同 ID 写入数据
+- Ignored when `u1 == u2`
+- Ignored when either ID is invalid
+- Writes only for valid and distinct IDs
 
 ### `float get_distance(int u1, int u2) const`
 
-读取两个实体之间的距离值。
+Gets the distance value between two entities.
 
-- `u1 == u2` 时返回 `0.0`
-- 任一 ID 非法时返回 `0.0`
-- 正常情况下返回最近一次设置的值
+- Returns `0.0` when `u1 == u2`
+- Returns `0.0` when either ID is invalid
+- Otherwise returns the last value written for that pair
 
-## 使用示例（GDScript）
+## Usage Example (GDScript)
 
 ```gdscript
 var dm := DistanceMatrix.new()
@@ -54,11 +54,11 @@ dm.set_distance(a, b, 12.5)
 print(dm.get_distance(a, b)) # 12.5
 
 dm.free_id(a)
-print(dm.get_distance(a, b)) # 0.0（a 释放后被清理）
+print(dm.get_distance(a, b)) # 0.0 (cleared after releasing a)
 ```
 
-## 文档维护建议
+## Documentation Maintenance Notes
 
-- 若新增/修改绑定方法，请同步更新 `DistanceMatrix.xml` 与本文件
-- 方法描述建议包含：用途、参数约束、返回值、异常/非法输入行为
-- 保持与 Godot Class Reference 风格一致（简明、可检索、可验证）
+- When adding or changing bound methods, update `doc_classes/DistanceMatrix.xml` and this file together.
+- Each method description should include intent, parameter constraints, return behavior, and invalid-input behavior.
+- Keep style aligned with Godot Class Reference conventions: concise, searchable, and verifiable.
