@@ -4,6 +4,8 @@ A Godot 4 GDExtension (C++) component for efficiently storing and querying pairw
 
 *If you need the version of MacOS or Linux, you can compile the sorce code by your customs scons.*
 
+This matrix approach can save at least 50% of memory usage because of the triangular matrix. 
+
 ## Features
 
 - Reusable entity ID allocation and recycling
