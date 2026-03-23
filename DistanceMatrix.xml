@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="DistanceMatrix" inherits="RefCounted" version="4.1">
+	<brief_description>
+		用于管理实体两两之间距离值的轻量级矩阵容器。
+	</brief_description>
+	<description>
+		DistanceMatrix 通过上三角压缩存储的方式记录两个 ID 之间的距离值，并提供 ID 分配与回收能力。
+		该类适用于需要高频读写实体距离关系的场景，例如近邻查询、目标筛选和群体行为模拟。
+		
+		每次调用 allocate_id() 会返回一个可用 ID。free_id() 释放 ID 时，会将该 ID 与其他实体的距离重置为 0.0。
+		如果传入无效 ID，或尝试读取/写入同一 ID 的距离，接口会安全返回，不会抛出错误。
+	</description>
+	<methods>
+		<method name="allocate_id" qualifiers="">
+			<return type="int" />
+			<description>
+				分配并返回一个可用的实体 ID。
+				如果存在已回收的 ID，优先复用；否则创建一个新 ID。
+			</description>
+		</method>
+		<method name="free_id" qualifiers="">
+			<return type="void" />
+			<param index="0" name="id" type="int" />
+			<description>
+				释放指定 ID 并将其加入可复用池。
+				释放时会清空该 ID 与所有已分配 ID 之间的距离值（置为 0.0）。
+				传入越界 ID 时不会执行任何操作。
+			</description>
+		</method>
+		<method name="set_distance" qualifiers="">
+			<return type="void" />
+			<param index="0" name="u1" type="int" />
+			<param index="1" name="u2" type="int" />
+			<param index="2" name="distance" type="float" />
+			<description>
+				设置两个不同实体 ID 之间的距离值。
+				当 u1 与 u2 相同，或任一 ID 非法时，调用会被忽略。
+			</description>
+		</method>
+		<method name="get_distance" qualifiers="const">
+			<return type="float" />
+			<param index="0" name="u1" type="int" />
+			<param index="1" name="u2" type="int" />
+			<description>
+				返回两个实体 ID 之间的距离值。
+				当 u1 与 u2 相同，或任一 ID 非法时，返回 0.0。
+			</description>
+		</method>
+	</methods>
+</class>
